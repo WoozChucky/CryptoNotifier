@@ -1,6 +1,8 @@
 ﻿using RestSharp;
 using System;
 using CryptoNotifier.Common.Model;
+using System.Net.Security;
+using CryptoNotifier.Common.Responses;
 
 namespace CryptoNotifier.Common
 {
@@ -14,7 +16,7 @@ namespace CryptoNotifier.Common
         private readonly string _base_url;
         private readonly RestClient _client;
         private bool _is_ready;
-
+        
         public CoinbaseAPI(string api_url = DEFAULT_BASE_URL)
         {
             _base_url = api_url;
@@ -24,8 +26,19 @@ namespace CryptoNotifier.Common
 
         private void SetupRestClient()
         {
+            /* TODO: This needs to be verified
+            _client.RemoteCertificateValidationCallback += 
+                new RemoteCertificateValidationCallback((sender, certificate, chain, policyErrors) =>
+            {
+                
+                return true;
+            }); */
             _client.AddDefaultHeader("CB-ACCESS-KEY", _api_key);
+            _client.AddDefaultHeader("CB-VERSION", "2017-11-30");
+            _client.AddDefaultHeader("Content-Type", "application/json");
+            _client.AddDefaultHeader("Accept-Language", _language);
 
+            _is_ready = true;
         }
 
         public void Provide(string key, string secret, Language language = Language.pt_PT)
@@ -38,7 +51,40 @@ namespace CryptoNotifier.Common
 
             _language = language.ToString();
 
-            _is_ready = true;
+            SetupRestClient();
+        }
+
+        public void SendRequest()
+        {
+            var request = new RestRequest("user", Method.GET);
+
+            var unixTimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString();
+
+            // string concatenation of timestamp + method + path + body
+            var message = unixTimeStamp + request.Method.ToString() + "/v2/user" + "";
+
+            var signature = CryptoUtils.GetSignature(_api_secret, message);
+
+            request.AddHeader("CB-ACCESS-TIMESTAMP", unixTimeStamp);
+            request.AddHeader("CB-ACCESS-SIGN", signature);
+
+            var response = _client.Execute<UserResponse>(request);
+            
+            if(response.IsSuccessful)
+            {
+                var user = response.Data;
+                if(user != null)
+                {
+
+                }
+            }
+        }
+
+
+
+        public void SendRequests<T>()
+        {
+
         }
     }
 }

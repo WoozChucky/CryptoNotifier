@@ -8,6 +8,10 @@
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Button x:Name="RequestButton" 
+                Content="Send Request" 
+                HorizontalAlignment="Center" 
+                VerticalAlignment="Center"/>
 
     </Grid>
 </Page>
