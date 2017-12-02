@@ -1,40 +1,47 @@
 ﻿using RestSharp;
 using System;
 using CryptoNotifier.Common.Model;
-using System.Net.Security;
-using CryptoNotifier.Common.Responses;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Linq;
 
 namespace CryptoNotifier.Common
 {
     public sealed class CoinbaseAPI
     {
-        public const string DEFAULT_BASE_URL = "https://api.coinbase.com/v2/";
-
         private string _api_key;
         private string _api_secret;
         private string _language;
-        private readonly string _base_url;
-        private readonly RestClient _client;
-        private bool _is_ready;
         
-        public CoinbaseAPI(string api_url = DEFAULT_BASE_URL)
+        private bool _is_ready;
+
+        private readonly string _base_url;
+        private readonly string _api_version;
+        private readonly RestClient _client;
+
+        #region Properties
+        private string UnixTimeStamp
+        {
+            get
+            {
+                return DateTimeOffset.Now.ToUnixTimeSeconds().ToString();
+            }
+        }
+        #endregion
+
+        public CoinbaseAPI(string api_url = CoinbaseEndpoints.DEFAULT_BASE_URL, 
+            string api_version = CoinbaseEndpoints.DEFAULT_API_VERSION)
         {
             _base_url = api_url;
-            _client = new RestClient(_base_url);
+            _api_version = api_version;
+            _client = new RestClient(_base_url + api_version);
             _is_ready = false;
         }
 
         private void SetupRestClient()
         {
-            /* TODO: This needs to be verified
-            _client.RemoteCertificateValidationCallback += 
-                new RemoteCertificateValidationCallback((sender, certificate, chain, policyErrors) =>
-            {
-                
-                return true;
-            }); */
             _client.AddDefaultHeader("CB-ACCESS-KEY", _api_key);
-            _client.AddDefaultHeader("CB-VERSION", "2017-11-30");
+            _client.AddDefaultHeader("CB-VERSION", CoinbaseEndpoints.DEFAULT_API_DATE);
             _client.AddDefaultHeader("Content-Type", "application/json");
             _client.AddDefaultHeader("Accept-Language", _language);
 
@@ -54,32 +61,47 @@ namespace CryptoNotifier.Common
             SetupRestClient();
         }
 
-        public void SendRequest()
+        public User GetUser()
         {
-            var request = new RestRequest("user", Method.GET);
+            var request = new RestRequest
+            {
+                RootElement = "data",
+                Method = Method.GET,
+                Resource = CoinbaseEndpoints.User
+            };
 
-            var unixTimeStamp = DateTimeOffset.Now.ToUnixTimeSeconds().ToString();
+            return Execute<User>(request);
+        }
 
+        private T Execute<T>(RestRequest request) where T : new()
+        {
+            if (!_is_ready) throw new InvalidOperationException("CoinbaseAPI.Provide() was not called.");
+
+            var ts = UnixTimeStamp;
             // string concatenation of timestamp + method + path + body
-            var message = unixTimeStamp + request.Method.ToString() + "/v2/user" + "";
+            var preSignature = ts + request.Method.ToString() + "/" +_api_version + request.Resource;
 
-            var signature = CryptoUtils.GetSignature(_api_secret, message);
+            request.AddHeader("CB-ACCESS-TIMESTAMP", ts);
+            request.AddHeader("CB-ACCESS-SIGN", CryptoUtils.GetSignature(_api_secret, preSignature));
 
-            request.AddHeader("CB-ACCESS-TIMESTAMP", unixTimeStamp);
-            request.AddHeader("CB-ACCESS-SIGN", signature);
+            var response = _client.Execute<T>(request);
 
-            var response = _client.Execute<UserResponse>(request);
-            
             if(response.IsSuccessful)
             {
-                var user = response.Data;
-                if(user != null)
+                return response.Data;
+            }
+            else
+            {
+                if(response.ErrorException != null)
                 {
-
+                    throw response.ErrorException;
+                }
+                else
+                {
+                    throw new Exception($"Code: {response.StatusCode.ToString()}. Content: {response.Content}");
                 }
             }
         }
-
 
 
         public void SendRequests<T>()

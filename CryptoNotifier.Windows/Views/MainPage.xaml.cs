@@ -40,7 +40,7 @@ namespace CryptoNotifier.Windows
         private void RequestButton_Click(object sender, RoutedEventArgs e)
         {
             api.Provide("8xQqUBVQJgOOSlbt", "6NLygrlOIG6f1NjiTxpFsS1FwgtijMLs");
-            api.SendRequest();
+            var user = api.GetUser();
 
             CryptoNotificationManager.SendLocalNotification("Title", "Message");
         }
