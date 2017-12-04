@@ -7,5 +7,7 @@
         public const string DEFAULT_API_DATE = "2017-11-30";
 
         public const string User = "user";
+        public const string Accounts = "accounts";
+        public const string ExchangeRates = "exchange-rates";
     }
 }

@@ -4,6 +4,7 @@ using CryptoNotifier.Common.Model;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
+using System.Collections;
 
 namespace CryptoNotifier.Common
 {
@@ -51,7 +52,7 @@ namespace CryptoNotifier.Common
         public void Provide(string key, string secret, Language language = Language.pt_PT)
         {
             if(string.IsNullOrEmpty(key) || string.IsNullOrEmpty(secret))
-                throw new ArgumentNullException("Key and Secret must not be null.");
+                throw new ArgumentNullException("key and secret must not be null.");
 
             _api_key = key;
             _api_secret = secret;
@@ -61,7 +62,7 @@ namespace CryptoNotifier.Common
             SetupRestClient();
         }
 
-        public User GetUser()
+        public async Task<User> GetUserAsync()
         {
             var request = new RestRequest
             {
@@ -70,10 +71,36 @@ namespace CryptoNotifier.Common
                 Resource = CoinbaseEndpoints.User
             };
 
-            return Execute<User>(request);
+            return await ExecuteAsync<User>(request);
         }
 
-        private T Execute<T>(RestRequest request) where T : new()
+        public async Task<IEnumerable<Account>> GetAccountsAsync()
+        {
+            var request = new RestRequest
+            {
+                RootElement = "data",
+                Method = Method.GET,
+                Resource = CoinbaseEndpoints.Accounts
+            };
+
+            return await ExecuteAsync<List<Account>>(request);
+        }
+
+        public async Task<ExchangeRate> GetExchangeRateAsync(string currency)
+        {
+            var request = new RestRequest
+            {
+                RootElement = "data",
+                Method = Method.GET,
+                Resource = CoinbaseEndpoints.ExchangeRates,
+            };
+
+            request.AddParameter("currency", currency);
+
+            return await ExecuteAsync<ExchangeRate>(request);
+        }
+
+        private async Task<T> ExecuteAsync<T>(RestRequest request) where T : new()
         {
             if (!_is_ready) throw new InvalidOperationException("CoinbaseAPI.Provide() was not called.");
 
@@ -84,7 +111,7 @@ namespace CryptoNotifier.Common
             request.AddHeader("CB-ACCESS-TIMESTAMP", ts);
             request.AddHeader("CB-ACCESS-SIGN", CryptoUtils.GetSignature(_api_secret, preSignature));
 
-            var response = _client.Execute<T>(request);
+            var response = await _client.ExecuteTaskAsync<T>(request);
 
             if(response.IsSuccessful)
             {
@@ -101,12 +128,6 @@ namespace CryptoNotifier.Common
                     throw new Exception($"Code: {response.StatusCode.ToString()}. Content: {response.Content}");
                 }
             }
-        }
-
-
-        public void SendRequests<T>()
-        {
-
         }
     }
 }
