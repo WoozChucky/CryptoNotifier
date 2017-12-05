@@ -4,21 +4,21 @@ using System.Linq;
 using Foundation;
 using AppKit;
 
-namespace CryptoNotifier.Mac.UI
+namespace CryptoNotifier.Mac.ViewControllers
 {
-    public partial class AccountTableCell : AppKit.NSView
+    public partial class AlertsView : AppKit.NSView
     {
         #region Constructors
 
         // Called when created from unmanaged code
-        public AccountTableCell(IntPtr handle) : base(handle)
+        public AlertsView(IntPtr handle) : base(handle)
         {
             Initialize();
         }
 
         // Called when created directly from a XIB file
         [Export("initWithCoder:")]
-        public AccountTableCell(NSCoder coder) : base(coder)
+        public AlertsView(NSCoder coder) : base(coder)
         {
             Initialize();
         }

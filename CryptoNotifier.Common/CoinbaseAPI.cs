@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Collections;
+using CryptoNotifier.Common.Exceptions;
 
 namespace CryptoNotifier.Common
 {
@@ -39,9 +40,8 @@ namespace CryptoNotifier.Common
             _is_ready = false;
         }
 
-        private void SetupRestClient()
+        void SetupRestClient()
         {
-            _client.AddDefaultHeader("CB-ACCESS-KEY", _api_key);
             _client.AddDefaultHeader("CB-VERSION", CoinbaseEndpoints.DEFAULT_API_DATE);
             _client.AddDefaultHeader("Content-Type", "application/json");
             _client.AddDefaultHeader("Accept-Language", _language);
@@ -61,6 +61,8 @@ namespace CryptoNotifier.Common
 
             SetupRestClient();
         }
+
+        #region AsyncRequests
 
         public async Task<User> GetUserAsync()
         {
@@ -100,6 +102,23 @@ namespace CryptoNotifier.Common
             return await ExecuteAsync<ExchangeRate>(request);
         }
 
+        public async Task<Balance> GetCurrentMarketPriceAsync(string originCurrency, string destinationCurrency)
+        {
+            var request = new RestRequest
+            {
+                RootElement = "data",
+                Method = Method.GET,
+                Resource = CoinbaseEndpoints.SpotPrice
+            };
+
+            request.AddUrlSegment("origin", originCurrency);
+            request.AddUrlSegment("destination", destinationCurrency);
+
+            return await ExecuteAsync<Balance>(request);
+        }
+
+        #endregion
+
         private async Task<T> ExecuteAsync<T>(RestRequest request) where T : new()
         {
             if (!_is_ready) throw new InvalidOperationException("CoinbaseAPI.Provide() was not called.");
@@ -108,6 +127,7 @@ namespace CryptoNotifier.Common
             // string concatenation of timestamp + method + path + body
             var preSignature = ts + request.Method.ToString() + "/" +_api_version + request.Resource;
 
+            request.AddHeader("CB-ACCESS-KEY", _api_key);
             request.AddHeader("CB-ACCESS-TIMESTAMP", ts);
             request.AddHeader("CB-ACCESS-SIGN", CryptoUtils.GetSignature(_api_secret, preSignature));
 
@@ -125,6 +145,9 @@ namespace CryptoNotifier.Common
                 }
                 else
                 {
+                    if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                        throw new CoinbaseTokenException(response.Content);
+                    
                     throw new Exception($"Code: {response.StatusCode.ToString()}. Content: {response.Content}");
                 }
             }

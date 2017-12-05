@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="13529" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaDFRPlugin" version="13506"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="13529"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+        <capability name="the Touch Bar" message="Use a version of macOS with Touch Bar support." minToolsVersion="8.1" minSystemVersion="10.12.2" requiredIntegratedClassName="NSTouchBar"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="PreferencesViewController">
+            <connections>
+                <outlet property="APIKeyInput" destination="7sK-lR-zXI" id="raM-0c-Nfw"/>
+                <outlet property="APISecretInput" destination="Epd-cb-fZA" id="FXa-xT-QBt"/>
+                <outlet property="FiveMinutes" destination="p4v-Nf-tkD" id="lqK-xj-LLA"/>
+                <outlet property="FiveSecond" destination="Hec-lE-SII" id="Hhp-7o-aTG"/>
+                <outlet property="OneMinute" destination="djh-3x-Cnz" id="Khc-6n-aXq"/>
+                <outlet property="OpenAtStartupCheckBox" destination="oUL-lU-89f" id="qYl-FT-ZgQ"/>
+                <outlet property="RefreshOff" destination="1tQ-eY-IdP" id="JeV-4j-j00"/>
+                <outlet property="TenMinutes" destination="FKv-1O-HGk" id="UNt-8E-vLz"/>
+                <outlet property="TenSecond" destination="koZ-ck-pUt" id="kop-5T-IqI"/>
+                <outlet property="ThirtySecond" destination="MLh-U9-p0D" id="po4-45-W8T"/>
+                <outlet property="TwoHalfMinutes" destination="jwL-JL-EMj" id="1qY-lY-XmF"/>
+                <outlet property="view" destination="4" id="17"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <customView id="4" customClass="PreferencesView">
+            <rect key="frame" x="0.0" y="0.0" width="470" height="296"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+            <subviews>
+                <button verticalHuggingPriority="750" misplaced="YES" id="rbv-EG-t2h">
+                    <rect key="frame" x="195" y="13" width="81" height="32"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <buttonCell key="cell" type="push" title="Save" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="wSw-26-Moh">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="OnSaveClicked:" target="-2" id="jlt-wL-yuv"/>
+                    </connections>
+                </button>
+                <button identifier="5" verticalHuggingPriority="750" misplaced="YES" id="Hec-lE-SII">
+                    <rect key="frame" x="9" y="101" width="57" height="18"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <buttonCell key="cell" type="radio" title="5 Sec" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="KZC-ZJ-8vT">
+                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="FiveSecondsClick:" target="-2" id="QcP-Sa-euI"/>
+                    </connections>
+                </button>
+                <button identifier="10" verticalHuggingPriority="750" misplaced="YES" id="koZ-ck-pUt">
+                    <rect key="frame" x="74" y="101" width="63" height="18"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <buttonCell key="cell" type="radio" title="10 Sec" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="zyv-7G-zJj">
+                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="TenSecondsClick:" target="-2" id="6Ql-3F-cyy"/>
+                    </connections>
+                </button>
+                <button identifier="30" verticalHuggingPriority="750" misplaced="YES" id="MLh-U9-p0D">
+                    <rect key="frame" x="144" y="101" width="65" height="18"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <buttonCell key="cell" type="radio" title="30 Sec" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="YI6-Hz-lRn">
+                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="ThirtySecondsClick:" target="-2" id="Ac2-nw-vIU"/>
+                    </connections>
+                </button>
+                <button identifier="60" verticalHuggingPriority="750" misplaced="YES" id="djh-3x-Cnz">
+                    <rect key="frame" x="216" y="101" width="57" height="18"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <buttonCell key="cell" type="radio" title="1 Min" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="utG-Fs-LNB">
+                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="OneMinClick:" target="-2" id="NKz-7n-BbI"/>
+                    </connections>
+                </button>
+                <button identifier="150" verticalHuggingPriority="750" misplaced="YES" id="jwL-JL-EMj">
+                    <rect key="frame" x="277" y="101" width="67" height="18"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <buttonCell key="cell" type="radio" title="2.5 Min" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="eDD-Pc-19T">
+                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="TwoHalfMinClick:" target="-2" id="MNQ-LI-lP4"/>
+                    </connections>
+                </button>
+                <button identifier="300" verticalHuggingPriority="750" misplaced="YES" id="p4v-Nf-tkD">
+                    <rect key="frame" x="349" y="101" width="57" height="18"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <buttonCell key="cell" type="radio" title="5 Min" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="Quh-fH-J7z">
+                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="FiveMinClick:" target="-2" id="gXK-St-nme"/>
+                    </connections>
+                </button>
+                <button identifier="600" verticalHuggingPriority="750" misplaced="YES" id="FKv-1O-HGk">
+                    <rect key="frame" x="406" y="101" width="66" height="18"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <buttonCell key="cell" type="radio" title="10 Min" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="wKH-vm-1sb">
+                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="TenMinClick:" target="-2" id="8Mo-fA-mYK"/>
+                    </connections>
+                </button>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" misplaced="YES" id="YBr-cj-74p">
+                    <rect key="frame" x="191" y="126" width="88" height="17"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Refresh Rate" id="8IT-R4-GOx">
+                        <font key="font" metaFont="systemBold"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <button identifier="0" verticalHuggingPriority="750" misplaced="YES" id="1tQ-eY-IdP">
+                    <rect key="frame" x="216" y="79" width="57" height="18"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <buttonCell key="cell" type="radio" title="Off" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="HfO-qR-f46">
+                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="RefreshOffClick:" target="-2" id="3K4-1d-hL5"/>
+                    </connections>
+                </button>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" misplaced="YES" id="1ee-yp-td3">
+                    <rect key="frame" x="18" y="259" width="106" height="17"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="API Key" id="LPw-Xa-mzC">
+                        <font key="font" metaFont="systemBold"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" misplaced="YES" id="4OU-x0-UbY">
+                    <rect key="frame" x="18" y="234" width="106" height="17"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="API Secret" id="GcS-hu-q4N">
+                        <font key="font" metaFont="systemBold"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" misplaced="YES" id="hSI-8K-HTr">
+                    <rect key="frame" x="18" y="209" width="106" height="17"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Open @ Startup" id="qhI-Y5-UUx">
+                        <font key="font" metaFont="systemBold"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <button verticalHuggingPriority="750" misplaced="YES" id="oUL-lU-89f">
+                    <rect key="frame" x="128" y="207" width="22" height="18"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <buttonCell key="cell" type="check" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="H8V-TK-74Z">
+                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                </button>
+                <textField verticalHuggingPriority="750" misplaced="YES" id="7sK-lR-zXI">
+                    <rect key="frame" x="130" y="257" width="320" height="22"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="WDj-Yq-YNq">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField verticalHuggingPriority="750" misplaced="YES" id="Epd-cb-fZA">
+                    <rect key="frame" x="130" y="232" width="320" height="22"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="nvd-Em-IU3">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+            </subviews>
+            <touchBar key="touchBar" id="Tg3-0H-nsA">
+                <touchBarItems>
+                    <touchBarItem identifier="savetip" visibilityPriority="1000" customizationLabel="SaveTip" id="a1u-ee-OMA">
+                        <viewController key="viewController" id="3Ju-rr-Hg7">
+                            <button key="view" identifier="Save" verticalHuggingPriority="750" id="VDg-c8-aJs">
+                                <rect key="frame" x="0.0" y="0.0" width="72" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="push" title="Button" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="caZ-i2-swM">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" usesAppearanceFont="YES"/>
+                                </buttonCell>
+                            </button>
+                        </viewController>
+                    </touchBarItem>
+                </touchBarItems>
+            </touchBar>
+            <point key="canvasLocation" x="136" y="168"/>
+        </customView>
+    </objects>
+</document>

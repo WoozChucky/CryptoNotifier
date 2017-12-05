@@ -44,6 +44,9 @@ namespace CryptoNotifier.Mac.UI
                 case "Conversion":
                     view.StringValue = (NSString)accounts[(int)row].Conversion;
                     break;
+                case "MarketValue":
+                    view.StringValue = (NSString)accounts[(int)row].MarketValue;
+                    break;
             }
 
             return view;

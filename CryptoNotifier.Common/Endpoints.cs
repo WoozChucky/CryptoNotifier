@@ -9,5 +9,6 @@
         public const string User = "user";
         public const string Accounts = "accounts";
         public const string ExchangeRates = "exchange-rates";
+        public const string SpotPrice = "prices/{origin}-{destination}/spot";
     }
 }

@@ -5,8 +5,10 @@ using System.Threading.Tasks;
 using System.Timers;
 using AppKit;
 using CryptoNotifier.Common;
-using CryptoNotifier.Common.Model;
+using CryptoNotifier.Common.Exceptions;
+using CryptoNotifier.Mac.Notifications;
 using CryptoNotifier.Mac.UI;
+using CryptoNotifier.Mac.ViewControllers;
 using CryptoNotifier.Mac.ViewModel;
 using Foundation;
 
@@ -18,10 +20,10 @@ namespace CryptoNotifier.Mac
         Timer RefreshTimer;
         bool FirstRun = true;
 
-        AppSettings settings = new AppSettings();
-
         public MainViewController(IntPtr handle) : base(handle)
         {
+            Crypto.Instance.Initialize();
+            NSUserNotificationCenter.DefaultUserNotificationCenter.Delegate = new CryptoNotificationDelegate();
             RefreshTimer = new Timer
             {
                 Interval = 100
@@ -37,33 +39,26 @@ namespace CryptoNotifier.Mac
             //8xQqUBVQJgOOSlbt
             //6NLygrlOIG6f1NjiTxpFsS1FwgtijMLs
 
-            if(LoadDefaultSettings())
-            {
+            try {
                 api = new CoinbaseAPI();
-                //api.Provide(settings.API_Key, settings.API_Secret, Language.en_US);
-                api.Provide("8xQqUBVQJgOOSlbt", "6NLygrlOIG6f1NjiTxpFsS1FwgtijMLs");
-                RefreshTimer.Start();
-            }
-            else
+                api.Provide("key", Crypto.Instance.Settings.API_Secret); 
+                if (Crypto.Instance.Settings.RefreshRate > 0)
+                {
+                    RefreshTimer.Start();
+                }
+            } 
+            catch(ArgumentNullException)
             {
-                //Open Preferences Dialog
-                PerformSegue("preferences_segue", this);
+                RefreshTimer.Stop();
+                ShowPreferences();
+
             }
+
         }
 
-        bool LoadDefaultSettings()
+        public override void ViewWillAppear()
         {
-            var defaults = NSUserDefaults.StandardUserDefaults;
-
-            settings.API_Key = defaults.StringForKey(DefaultKeys.API_KEY);
-            settings.API_Secret = defaults.StringForKey(DefaultKeys.API_SECRET);
-            settings.Language = defaults.StringForKey(DefaultKeys.LANGUAGE);
-            settings.RefreshRate = defaults.FloatForKey(DefaultKeys.REFRESH_RATE);
-
-            return (!string.IsNullOrEmpty(settings.API_Key)
-                     && !string.IsNullOrEmpty(settings.API_Secret)
-                     //&& !string.IsNullOrEmpty(settings.Language)
-                     && settings.RefreshRate > 4);
+            base.ViewWillAppear();
         }
 
         public override void ViewDidDisappear()
@@ -72,28 +67,83 @@ namespace CryptoNotifier.Mac
             NSApplication.SharedApplication.Terminate(this);
         }
 
-        public override void PrepareForSegue(NSStoryboardSegue segue, NSObject sender)
-        {
-            base.PrepareForSegue(segue, sender);
-        }
-
         void OnRefreshElapsed(object source, ElapsedEventArgs args)
         {
+
             if(FirstRun)
             {
                 FirstRun = false;
-                RefreshTimer.Interval = settings.RefreshRate * 1000;
-                BeginInvokeOnMainThread( async () => await LoadUserData());
+                RefreshTimer.Interval = Crypto.Instance.Settings.RefreshRate * 1000;
+                BeginInvokeOnMainThread( async () =>
+                {
+                    try
+                    {
+                        await LoadUserData();
+                    }
+                    catch (CoinbaseTokenException)
+                    {
+                        FirstRun = true;
+                        RefreshTimer.Stop();
+                        ShowPreferences();
+                    }
+                });
             }
-            BeginInvokeOnMainThread(async () => {
-                await LoadAccountsData();
-                Console.WriteLine("New Account Data at " + args.SignalTime.ToString());
-            });
+            else 
+            {
+                BeginInvokeOnMainThread(async () => {
+                    try
+                    {
+                        await LoadAccountsData();
+                        Console.WriteLine("New Account Data at " + args.SignalTime.ToString());
+                    }
+                    catch (CoinbaseTokenException)
+                    {
+                        RefreshTimer.Stop();
+                        ShowPreferences();
+                    }
+
+                });
+            }
         }
 
-        partial void OnFetchButtonClick(NSButton sender)
+        void ShowPreferences()
         {
-            //await LoadUserData();
+            this.CreateAlert("Settings Update Required",
+                             "Please provide your Coinbase API account details.\n\nThe settings can be found at coinbase.com/settings/api.",
+                             () =>
+                             {
+                                 var prefVC = new PreferencesViewController();
+                                 prefVC.OnPreferencesSaved += (sender, e) =>
+                                 {
+                                     //Update API settings and restart refreshing
+                                     api.Provide(Crypto.Instance.Settings.API_Key, Crypto.Instance.Settings.API_Secret);
+                                     RefreshTimer.Interval = Crypto.Instance.Settings.RefreshRate * 1000;
+                                     if(Crypto.Instance.Settings.RefreshRate > 0)
+                                        RefreshTimer.Start();
+                                 };
+                                 PresentViewControllerAsModalWindow(prefVC);
+                             }, NSAlertStyle.Warning);
+        }
+
+        async partial void OnFetchButtonClick(NSButton sender)
+        {
+            
+
+            /*
+            {
+                var notification = new NSUserNotification();
+                // Add text and sound to the notification
+                notification.Title = "CryptoNotifier - Price Alert";
+                notification.InformativeText = "Add your task to your activity log";
+                notification.Subtitle = "This is a subtitle";
+                notification.SoundName = NSUserNotification.NSUserNotificationDefaultSoundName;
+                notification.HasActionButton = true; // Show "close" and "show" buttons when the notification is displayed as an alert
+                notification.ActionButtonTitle = "Details";
+                NSUserNotificationCenter.DefaultUserNotificationCenter.DeliverNotification(notification);
+            }
+            */
+            await LoadAccountsData();
+
         }
 
         async Task LoadAccountsData()
@@ -112,11 +162,21 @@ namespace CryptoNotifier.Mac
                     Currency = account.Balance.Currency,
                     Amount = account.Balance.Ammount
                 };
-                var rate = await api.GetExchangeRateAsync(vm.Currency);
 
-                var converted = float.Parse(vm.Amount) * float.Parse(rate.Rates.FirstOrDefault(r => r.Key == primaryCurrency).Value);
+                if (vm.Currency != primaryCurrency) //Ignore EUR / USD
+                {
+                    var rate = await api.GetCurrentMarketPriceAsync(vm.Currency, primaryCurrency);
 
-                vm.Conversion = $"{converted.ToString("N2")} {primaryCurrency}";
+                    var converted = float.Parse(vm.Amount) * float.Parse(rate.Ammount);
+
+                    vm.Conversion = $"{converted.ToString("N2")} {primaryCurrency}";
+                    vm.MarketValue = $"{rate.Ammount} {primaryCurrency}";
+                }
+                else
+                {
+                    vm.Conversion = $"{vm.Amount} {vm.Currency}";
+                    vm.MarketValue = $"1.00 {vm.Currency}";
+                }
 
                 vmList.Add(vm);
             }
