@@ -35,13 +35,14 @@ namespace CryptoNotifier.Mac
         {
             base.ViewDidLoad();
             Title = "CryptoNotifier";
+            LoadingIndicator.StopAnimation(this);
 
             //8xQqUBVQJgOOSlbt
             //6NLygrlOIG6f1NjiTxpFsS1FwgtijMLs
 
             try {
                 api = new CoinbaseAPI();
-                api.Provide("key", Crypto.Instance.Settings.API_Secret); 
+                api.Provide(Crypto.Instance.Settings.API_Key, Crypto.Instance.Settings.API_Secret); 
                 if (Crypto.Instance.Settings.RefreshRate > 0)
                 {
                     RefreshTimer.Start();
@@ -51,9 +52,7 @@ namespace CryptoNotifier.Mac
             {
                 RefreshTimer.Stop();
                 ShowPreferences();
-
             }
-
         }
 
         public override void ViewWillAppear()
@@ -78,7 +77,9 @@ namespace CryptoNotifier.Mac
                 {
                     try
                     {
+                        LoadingIndicator.StartAnimation(this);
                         await LoadUserData();
+                        await LoadAccountsData();
                     }
                     catch (CoinbaseTokenException)
                     {
@@ -93,6 +94,7 @@ namespace CryptoNotifier.Mac
                 BeginInvokeOnMainThread(async () => {
                     try
                     {
+                        LoadingIndicator.StartAnimation(this);
                         await LoadAccountsData();
                         Console.WriteLine("New Account Data at " + args.SignalTime.ToString());
                     }
@@ -110,19 +112,21 @@ namespace CryptoNotifier.Mac
         {
             this.CreateAlert("Settings Update Required",
                              "Please provide your Coinbase API account details.\n\nThe settings can be found at coinbase.com/settings/api.",
-                             () =>
-                             {
-                                 var prefVC = new PreferencesViewController();
-                                 prefVC.OnPreferencesSaved += (sender, e) =>
-                                 {
-                                     //Update API settings and restart refreshing
-                                     api.Provide(Crypto.Instance.Settings.API_Key, Crypto.Instance.Settings.API_Secret);
-                                     RefreshTimer.Interval = Crypto.Instance.Settings.RefreshRate * 1000;
-                                     if(Crypto.Instance.Settings.RefreshRate > 0)
-                                        RefreshTimer.Start();
-                                 };
-                                 PresentViewControllerAsModalWindow(prefVC);
-                             }, NSAlertStyle.Warning);
+                 () =>
+                 {
+                     var prefVC = new PreferencesViewController();
+                     prefVC.OnPreferencesSaved += (sender, e) =>
+                     {
+                        
+                         //Update API settings and restart refreshing
+                         api.Provide(Crypto.Instance.Settings.API_Key, Crypto.Instance.Settings.API_Secret);
+                         RefreshTimer.Interval = Crypto.Instance.Settings.RefreshRate * 1000;
+                         if(Crypto.Instance.Settings.RefreshRate > 0)
+                            RefreshTimer.Start();
+                    };
+                    prefVC.OnPreferencesIgnored += (sender, e) => ShowPreferences();
+                    PresentViewControllerAsModalWindow(prefVC);
+                 }, NSAlertStyle.Warning);
         }
 
         async partial void OnFetchButtonClick(NSButton sender)
@@ -180,6 +184,8 @@ namespace CryptoNotifier.Mac
 
                 vmList.Add(vm);
             }
+
+            LoadingIndicator.StopAnimation(this);
 
             AccountsTable.DataSource = new AccountsTableDataSource(vmList.Count());
             AccountsTable.Delegate = new AccountsTableDelegate(vmList.OrderByDescending(a => a.Amount).ToList());

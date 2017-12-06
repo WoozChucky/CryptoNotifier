@@ -10,7 +10,9 @@ namespace CryptoNotifier.Mac.ViewControllers
     public partial class PreferencesViewController : AppKit.NSViewController
     {
         public event EventHandler OnPreferencesSaved;
+        public event EventHandler OnPreferencesIgnored;
 
+        bool _valid;
         List<NSButton> checkBoxList;
 
         #region Constructors
@@ -48,7 +50,12 @@ namespace CryptoNotifier.Mac.ViewControllers
             APIKeyInput.StringValue = Crypto.Instance.Settings.API_Key;
             APISecretInput.StringValue = Crypto.Instance.Settings.API_Secret;
             OpenAtStartupCheckBox.State = Crypto.Instance.Settings.AutoStart ? NSCellStateValue.On : NSCellStateValue.Off;
-            //TODO: Rest of params
+
+            var check = checkBoxList.FirstOrDefault(b => b.Identifier == Crypto.Instance.Settings.RefreshRate.ToString());
+            if(check != null)
+            {
+                check.State = NSCellStateValue.On;
+            }
         }
 
 
@@ -125,14 +132,26 @@ namespace CryptoNotifier.Mac.ViewControllers
             };
 
             this.CreateAlert("Settings updated.", null, () => {
+                _valid = true;
                 OnPreferencesSavedHandler(EventArgs.Empty);
                 DismissViewController(this);
             });
         }
 
+        public override void ViewWillDisappear()
+        {
+            if (!_valid) OnPreferencesIgnoredHandler(EventArgs.Empty);
+            base.ViewWillDisappear();
+        }
+
         protected virtual void OnPreferencesSavedHandler(EventArgs e)
         {
             OnPreferencesSaved?.Invoke(this, e);
+        }
+
+        protected virtual void OnPreferencesIgnoredHandler(EventArgs e)
+        {
+            OnPreferencesIgnored?.Invoke(this, e);
         }
 
         //strongly typed view accessor

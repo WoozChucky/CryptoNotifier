@@ -22,6 +22,9 @@ namespace CryptoNotifier.Mac
 		AppKit.NSButton FetchButton { get; set; }
 
 		[Outlet]
+		AppKit.NSProgressIndicator LoadingIndicator { get; set; }
+
+		[Outlet]
 		AppKit.NSTextField NameTextField { get; set; }
 
 		[Action ("OnFetchButtonClick:")]
@@ -29,6 +32,16 @@ namespace CryptoNotifier.Mac
 		
 		void ReleaseDesignerOutlets ()
 		{
+			if (AccountsTable != null) {
+				AccountsTable.Dispose ();
+				AccountsTable = null;
+			}
+
+			if (AvatarImage != null) {
+				AvatarImage.Dispose ();
+				AvatarImage = null;
+			}
+
 			if (FetchButton != null) {
 				FetchButton.Dispose ();
 				FetchButton = null;
@@ -39,14 +52,9 @@ namespace CryptoNotifier.Mac
 				NameTextField = null;
 			}
 
-			if (AvatarImage != null) {
-				AvatarImage.Dispose ();
-				AvatarImage = null;
-			}
-
-			if (AccountsTable != null) {
-				AccountsTable.Dispose ();
-				AccountsTable = null;
+			if (LoadingIndicator != null) {
+				LoadingIndicator.Dispose ();
+				LoadingIndicator = null;
 			}
 		}
 	}

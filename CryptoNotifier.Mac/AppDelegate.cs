@@ -1,10 +1,12 @@
-﻿using AppKit;
+using System;
+using AppKit;
+using CryptoNotifier.Mac.ViewControllers;
 using Foundation;
 
 namespace CryptoNotifier.Mac
 {
     [Register("AppDelegate")]
-    public class AppDelegate : NSApplicationDelegate
+    public partial class AppDelegate : NSApplicationDelegate
     {
 
         public override void DidFinishLaunching(NSNotification notification)
@@ -12,6 +14,8 @@ namespace CryptoNotifier.Mac
             // Insert code here to initialize your application
 
             NSApplication.SharedApplication.SetAutomaticCustomizeTouchBarMenuItemEnabled(true);
+
+
         }
 
         public override void WillTerminate(NSNotification notification)

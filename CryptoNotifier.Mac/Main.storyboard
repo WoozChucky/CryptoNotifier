@@ -15,37 +15,18 @@
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" title="CryptoNotifier" systemMenu="apple" id="uQy-DD-JDr">
                                     <items>
-                                        <menuItem title="Preferences…" keyEquivalent="p" identifier="Preferences" id="BOF-NM-1cW"/>
+                                        <menuItem title="Clear Data" identifier="ClearData" id="BOF-NM-1cW">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                        </menuItem>
+                                        <menuItem title="Preferences" keyEquivalent="p" identifier="Preferences" id="XAO-wh-eYu">
+                                            <connections>
+                                                <action selector="OnPreferencesClick:" target="Voe-Tx-rLC" id="1kC-hB-Vyf"/>
+                                            </connections>
+                                        </menuItem>
                                         <menuItem isSeparatorItem="YES" id="wFC-TO-SCJ"/>
                                         <menuItem title="Quit CryptoNotifier" keyEquivalent="q" id="4sb-4s-VLi">
                                             <connections>
                                                 <action selector="terminate:" target="Ady-hI-5gd" id="Te7-pn-YzF"/>
-                                            </connections>
-                                        </menuItem>
-                                    </items>
-                                </menu>
-                            </menuItem>
-                            <menuItem title="Alerts" id="5QF-Oa-p0T">
-                                <modifierMask key="keyEquivalentModifierMask"/>
-                                <menu key="submenu" title="Alerts" id="W48-6f-4Dl"/>
-                            </menuItem>
-                            <menuItem title="Help" id="wpr-3q-Mcd">
-                                <modifierMask key="keyEquivalentModifierMask"/>
-                                <menu key="submenu" title="Help" systemMenu="help" id="F2S-fz-NVQ">
-                                    <items>
-                                        <menuItem title="About" keyEquivalent="a" id="FKE-Sm-Kum">
-                                            <connections>
-                                                <action selector="showHelp:" target="Ady-hI-5gd" id="y7X-2Q-9no"/>
-                                            </connections>
-                                        </menuItem>
-                                        <menuItem title="Report Bug" keyEquivalent="b" id="ETM-3B-TzC">
-                                            <connections>
-                                                <action selector="showHelp:" target="Ady-hI-5gd" id="uxx-me-tsc"/>
-                                            </connections>
-                                        </menuItem>
-                                        <menuItem title="Help" keyEquivalent="h" id="RBL-iy-IT5">
-                                            <connections>
-                                                <action selector="showHelp:" target="Ady-hI-5gd" id="GPG-QB-B7B"/>
                                             </connections>
                                         </menuItem>
                                     </items>
@@ -65,8 +46,8 @@
         <!--Window Controller-->
         <scene sceneID="R2V-B0-nI4">
             <objects>
-                <windowController id="B8D-0N-5wS" sceneMemberID="viewController">
-                    <window key="window" title="CryptoNotifier" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" animationBehavior="default" tabbingMode="preferred" titlebarAppearsTransparent="YES" id="IQv-IB-iLA">
+                <windowController storyboardIdentifier="Main" id="B8D-0N-5wS" sceneMemberID="viewController">
+                    <window key="window" identifier="MainWindow" title="CryptoNotifier" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" animationBehavior="default" tabbingIdentifier="MainWindow" tabbingMode="preferred" titlebarAppearsTransparent="YES" id="IQv-IB-iLA">
                         <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" texturedBackground="YES"/>
                         <windowCollectionBehavior key="collectionBehavior" fullScreenNone="YES"/>
                         <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
@@ -161,11 +142,11 @@
                                     </subviews>
                                 </clipView>
                                 <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="gYq-8N-yRH">
-                                    <rect key="frame" x="-7" y="9" width="0.0" height="15"/>
+                                    <rect key="frame" x="1" y="8" width="0.0" height="16"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
                                 <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="NO" id="9Lx-iv-KO2">
-                                    <rect key="frame" x="-14" y="16" width="15" height="0.0"/>
+                                    <rect key="frame" x="-15" y="24" width="16" height="0.0"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
                                 <tableHeaderView key="headerView" id="XX3-qG-quK">
@@ -185,8 +166,8 @@
                                     <action selector="OnFetchButtonClick:" target="XfG-lQ-9wD" id="oY4-V2-boB"/>
                                 </connections>
                             </button>
-                            <progressIndicator wantsLayer="YES" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" maxValue="100" bezeled="NO" indeterminate="YES" controlSize="small" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="d5q-0J-NoS">
-                                <rect key="frame" x="247" y="209" width="16" height="16"/>
+                            <progressIndicator wantsLayer="YES" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" maxValue="100" displayedWhenStopped="NO" bezeled="NO" indeterminate="YES" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="d5q-0J-NoS">
+                                <rect key="frame" x="224" y="78" width="32" height="32"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                             </progressIndicator>
                         </subviews>
@@ -195,6 +176,7 @@
                         <outlet property="AccountsTable" destination="Ujg-5u-qvm" id="47i-Lm-LWu"/>
                         <outlet property="AvatarImage" destination="gHi-fZ-za2" id="Bp4-zX-g8a"/>
                         <outlet property="FetchButton" destination="aao-5Z-590" id="pOH-X4-8wX"/>
+                        <outlet property="LoadingIndicator" destination="d5q-0J-NoS" id="Vda-qp-Vey"/>
                         <outlet property="NameTextField" destination="zYs-Df-YZE" id="3gn-dz-Cse"/>
                         <outlet property="OutputTextLabel" destination="sMY-uS-10e" id="aug-Hp-gyE"/>
                     </connections>

@@ -9,8 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryptoNotifier.Common", "Cr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryptoNotifier.Mac", "CryptoNotifier.Mac\CryptoNotifier.Mac.csproj", "{77C142FA-5731-4505-AF2D-A8E8E18FCD15}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryptoNotifier.Mac.Bindings", "CryptoNotifier.Mac.Bindings\CryptoNotifier.Mac.Bindings.csproj", "{D263EE34-B00A-406B-8D38-23D5368F97ED}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -93,22 +91,6 @@ Global
 		{9E0BF46C-92E5-4215-B820-E0FDEDA4B68E}.Release|x64.Build.0 = Release|Any CPU
 		{9E0BF46C-92E5-4215-B820-E0FDEDA4B68E}.Release|x86.ActiveCfg = Release|Any CPU
 		{9E0BF46C-92E5-4215-B820-E0FDEDA4B68E}.Release|x86.Build.0 = Release|Any CPU
-		{D263EE34-B00A-406B-8D38-23D5368F97ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D263EE34-B00A-406B-8D38-23D5368F97ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D263EE34-B00A-406B-8D38-23D5368F97ED}.Debug|ARM.ActiveCfg = Debug|Any CPU
-		{D263EE34-B00A-406B-8D38-23D5368F97ED}.Debug|ARM.Build.0 = Debug|Any CPU
-		{D263EE34-B00A-406B-8D38-23D5368F97ED}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{D263EE34-B00A-406B-8D38-23D5368F97ED}.Debug|x64.Build.0 = Debug|Any CPU
-		{D263EE34-B00A-406B-8D38-23D5368F97ED}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{D263EE34-B00A-406B-8D38-23D5368F97ED}.Debug|x86.Build.0 = Debug|Any CPU
-		{D263EE34-B00A-406B-8D38-23D5368F97ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D263EE34-B00A-406B-8D38-23D5368F97ED}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D263EE34-B00A-406B-8D38-23D5368F97ED}.Release|ARM.ActiveCfg = Release|Any CPU
-		{D263EE34-B00A-406B-8D38-23D5368F97ED}.Release|ARM.Build.0 = Release|Any CPU
-		{D263EE34-B00A-406B-8D38-23D5368F97ED}.Release|x64.ActiveCfg = Release|Any CPU
-		{D263EE34-B00A-406B-8D38-23D5368F97ED}.Release|x64.Build.0 = Release|Any CPU
-		{D263EE34-B00A-406B-8D38-23D5368F97ED}.Release|x86.ActiveCfg = Release|Any CPU
-		{D263EE34-B00A-406B-8D38-23D5368F97ED}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

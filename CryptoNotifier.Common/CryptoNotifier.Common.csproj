@@ -10,5 +10,7 @@
 
   <ItemGroup>
     <Folder Include="Exceptions\" />
+    <Folder Include="Database\" />
+    <Folder Include="Database\Model\" />
   </ItemGroup>
 </Project>
