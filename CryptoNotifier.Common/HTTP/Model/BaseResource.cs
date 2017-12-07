@@ -1,7 +1,6 @@
-﻿using System;
-using RestSharp.Deserializers;
+﻿using RestSharp.Deserializers;
 
-namespace CryptoNotifier.Common.Model
+namespace CryptoNotifier.Common.HTTP.Model
 {
     public class BaseResource
     {

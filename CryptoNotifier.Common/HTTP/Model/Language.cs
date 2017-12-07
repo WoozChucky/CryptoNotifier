@@ -1,6 +1,6 @@
 using System;
 
-namespace CryptoNotifier.Common.Model
+namespace CryptoNotifier.Common.HTTP.Model
 {
     public enum Language
     {

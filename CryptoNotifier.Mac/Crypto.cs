@@ -1,4 +1,5 @@
 ﻿using System;
+using CryptoNotifier.Common.HTTP;
 using Foundation;
 
 namespace CryptoNotifier.Mac
@@ -9,6 +10,7 @@ namespace CryptoNotifier.Mac
 
         NSUserDefaults _defaults;
         AppSettings _settings;
+        CoinbaseAPI _api;
 
         Crypto()
         {
@@ -26,6 +28,12 @@ namespace CryptoNotifier.Mac
                 _defaults.SetFloat(_settings.RefreshRate, DefaultKeys.REFRESH_RATE);
                 _defaults.SetBool(_settings.AutoStart, DefaultKeys.AUTO_START);
             }
+        }
+
+        internal CoinbaseAPI API
+        {
+            get { return _api; }
+            set { _api = value; }
         }
 
         public static Crypto Instance 

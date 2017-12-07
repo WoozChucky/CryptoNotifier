@@ -4,24 +4,26 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Timers;
 using AppKit;
-using CryptoNotifier.Common;
+using CryptoNotifier.Common.HTTP;
 using CryptoNotifier.Common.Exceptions;
 using CryptoNotifier.Mac.Notifications;
 using CryptoNotifier.Mac.UI;
 using CryptoNotifier.Mac.ViewControllers;
 using CryptoNotifier.Mac.ViewModel;
+using CryptoNotifier.Common.Database.Model;
 using Foundation;
+using CryptoNotifier.Common.Database;
 
 namespace CryptoNotifier.Mac
 {
     public partial class MainViewController : NSViewController
     {
-        CoinbaseAPI api;
         Timer RefreshTimer;
         bool FirstRun = true;
 
         public MainViewController(IntPtr handle) : base(handle)
         {
+            new SQLiteManager();
             Crypto.Instance.Initialize();
             NSUserNotificationCenter.DefaultUserNotificationCenter.Delegate = new CryptoNotificationDelegate();
             RefreshTimer = new Timer
@@ -29,6 +31,7 @@ namespace CryptoNotifier.Mac
                 Interval = 100
             };
             RefreshTimer.Elapsed += OnRefreshElapsed;
+
         }
 
         public override void ViewDidLoad()
@@ -41,8 +44,8 @@ namespace CryptoNotifier.Mac
             //6NLygrlOIG6f1NjiTxpFsS1FwgtijMLs
 
             try {
-                api = new CoinbaseAPI();
-                api.Provide(Crypto.Instance.Settings.API_Key, Crypto.Instance.Settings.API_Secret); 
+                Crypto.Instance.API = new CoinbaseAPI();
+                Crypto.Instance.API.Provide(Crypto.Instance.Settings.API_Key, Crypto.Instance.Settings.API_Secret); 
                 if (Crypto.Instance.Settings.RefreshRate > 0)
                 {
                     RefreshTimer.Start();
@@ -117,42 +120,35 @@ namespace CryptoNotifier.Mac
                      var prefVC = new PreferencesViewController();
                      prefVC.OnPreferencesSaved += (sender, e) =>
                      {
-                        
-                         //Update API settings and restart refreshing
-                         api.Provide(Crypto.Instance.Settings.API_Key, Crypto.Instance.Settings.API_Secret);
-                         RefreshTimer.Interval = Crypto.Instance.Settings.RefreshRate * 1000;
-                         if(Crypto.Instance.Settings.RefreshRate > 0)
-                            RefreshTimer.Start();
+                        //Update API settings and restart refreshing
+                        Crypto.Instance.API.Provide(Crypto.Instance.Settings.API_Key, Crypto.Instance.Settings.API_Secret);
+                        RefreshTimer.Interval = Crypto.Instance.Settings.RefreshRate * 1000;
+                        if(Crypto.Instance.Settings.RefreshRate > 0)
+                           RefreshTimer.Start();
                     };
                     prefVC.OnPreferencesIgnored += (sender, e) => ShowPreferences();
                     PresentViewControllerAsModalWindow(prefVC);
                  }, NSAlertStyle.Warning);
         }
 
-        async partial void OnFetchButtonClick(NSButton sender)
+        partial void OnFetchButtonClick(NSButton sender)
         {
-            
+            var notification = new NSUserNotification();
+            // Add text and sound to the notification
+            notification.Title = "CryptoNotifier - Price Alert";
+            notification.InformativeText = "Add your task to your activity log";
+            notification.Subtitle = "This is a subtitle";
+            notification.SoundName = NSUserNotification.NSUserNotificationDefaultSoundName;
+            notification.HasActionButton = true; // Show "close" and "show" buttons when the notification is displayed as an alert
+            notification.ActionButtonTitle = "Details";
+            NSUserNotificationCenter.DefaultUserNotificationCenter.DeliverNotification(notification);
 
-            /*
-            {
-                var notification = new NSUserNotification();
-                // Add text and sound to the notification
-                notification.Title = "CryptoNotifier - Price Alert";
-                notification.InformativeText = "Add your task to your activity log";
-                notification.Subtitle = "This is a subtitle";
-                notification.SoundName = NSUserNotification.NSUserNotificationDefaultSoundName;
-                notification.HasActionButton = true; // Show "close" and "show" buttons when the notification is displayed as an alert
-                notification.ActionButtonTitle = "Details";
-                NSUserNotificationCenter.DefaultUserNotificationCenter.DeliverNotification(notification);
-            }
-            */
-            await LoadAccountsData();
-
+            //await LoadAccountsData();
         }
 
         async Task LoadAccountsData()
         {
-            var accounts = await api.GetAccountsAsync();
+            var accounts = await Crypto.Instance.API.GetAccountsAsync();
 
             var primaryCurrency = accounts.FirstOrDefault(a => a.Type == "fiat").Balance.Currency;
 
@@ -169,7 +165,7 @@ namespace CryptoNotifier.Mac
 
                 if (vm.Currency != primaryCurrency) //Ignore EUR / USD
                 {
-                    var rate = await api.GetCurrentMarketPriceAsync(vm.Currency, primaryCurrency);
+                    var rate = await Crypto.Instance.API.GetCurrentMarketPriceAsync(vm.Currency, primaryCurrency);
 
                     var converted = float.Parse(vm.Amount) * float.Parse(rate.Ammount);
 
@@ -193,7 +189,7 @@ namespace CryptoNotifier.Mac
 
         async Task LoadUserData()
         {
-            var user = await api.GetUserAsync();
+            var user = await Crypto.Instance.API.GetUserAsync();
             NameTextField.StringValue = user.Name + " : " + user.Id;
             AvatarImage.Image = new NSImage(new NSUrl(user.AvatarUrl));
         }

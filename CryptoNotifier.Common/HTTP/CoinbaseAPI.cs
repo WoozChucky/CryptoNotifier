@@ -1,28 +1,26 @@
 ﻿using RestSharp;
 using System;
-using CryptoNotifier.Common.Model;
+using CryptoNotifier.Common.HTTP.Model;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Linq;
-using System.Collections;
 using CryptoNotifier.Common.Exceptions;
 
-namespace CryptoNotifier.Common
+namespace CryptoNotifier.Common.HTTP
 {
     public sealed class CoinbaseAPI
     {
-        private string _api_key;
-        private string _api_secret;
-        private string _language;
-        
-        private bool _is_ready;
+        string _api_key;
+        string _api_secret;
+        string _language;
 
-        private readonly string _base_url;
-        private readonly string _api_version;
-        private readonly RestClient _client;
+        bool _is_ready;
+
+        readonly string _base_url;
+        readonly string _api_version;
+        readonly RestClient _client;
 
         #region Properties
-        private string UnixTimeStamp
+        string UnixTimeStamp
         {
             get
             {
@@ -31,7 +29,7 @@ namespace CryptoNotifier.Common
         }
         #endregion
 
-        public CoinbaseAPI(string api_url = CoinbaseEndpoints.DEFAULT_BASE_URL, 
+        public CoinbaseAPI(string api_url = CoinbaseEndpoints.DEFAULT_BASE_URL,
             string api_version = CoinbaseEndpoints.DEFAULT_API_VERSION)
         {
             _base_url = api_url;
@@ -40,18 +38,9 @@ namespace CryptoNotifier.Common
             _is_ready = false;
         }
 
-        void SetupRestClient()
-        {
-            _client.AddDefaultHeader("CB-VERSION", CoinbaseEndpoints.DEFAULT_API_DATE);
-            _client.AddDefaultHeader("Content-Type", "application/json");
-            _client.AddDefaultHeader("Accept-Language", _language);
-
-            _is_ready = true;
-        }
-
         public void Provide(string key, string secret, Language language = Language.pt_PT)
         {
-            if(string.IsNullOrEmpty(key) || string.IsNullOrEmpty(secret))
+            if (string.IsNullOrEmpty(key) || string.IsNullOrEmpty(secret))
                 throw new ArgumentNullException("key and secret must not be null.");
 
             _api_key = key;
@@ -59,7 +48,12 @@ namespace CryptoNotifier.Common
 
             _language = language.ToString();
 
-            SetupRestClient();
+            //NOTE: Maybe these headers should be moved to <T>ExecuteAsync
+            _client.AddDefaultHeader("CB-VERSION", CoinbaseEndpoints.DEFAULT_API_DATE);
+            _client.AddDefaultHeader("Content-Type", "application/json");
+            _client.AddDefaultHeader("Accept-Language", _language);
+
+            _is_ready = true;
         }
 
         #region AsyncRequests
@@ -119,13 +113,13 @@ namespace CryptoNotifier.Common
 
         #endregion
 
-        private async Task<T> ExecuteAsync<T>(RestRequest request) where T : new()
+        async Task<T> ExecuteAsync<T>(RestRequest request) where T : new()
         {
             if (!_is_ready) throw new InvalidOperationException("CoinbaseAPI.Provide() was not called.");
 
             var ts = UnixTimeStamp;
             // string concatenation of timestamp + method + path + body
-            var preSignature = ts + request.Method.ToString() + "/" +_api_version + request.Resource;
+            var preSignature = ts + request.Method.ToString() + "/" + _api_version + request.Resource;
 
             request.AddHeader("CB-ACCESS-KEY", _api_key);
             request.AddHeader("CB-ACCESS-TIMESTAMP", ts);
@@ -133,24 +127,20 @@ namespace CryptoNotifier.Common
 
             var response = await _client.ExecuteTaskAsync<T>(request);
 
-            if(response.IsSuccessful)
+            if (response.IsSuccessful)
             {
                 return response.Data;
             }
-            else
+
+            if (response.ErrorException != null)
             {
-                if(response.ErrorException != null)
-                {
-                    throw response.ErrorException;
-                }
-                else
-                {
-                    if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
-                        throw new CoinbaseTokenException(response.Content);
-                    
-                    throw new Exception($"Code: {response.StatusCode.ToString()}. Content: {response.Content}");
-                }
+                throw response.ErrorException;
             }
+
+            if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                throw new CoinbaseTokenException(response.Content);
+
+            throw new Exception($"Code: {response.StatusCode.ToString()}. Content: {response.Content}");
         }
     }
 }
